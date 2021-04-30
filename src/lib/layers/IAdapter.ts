@@ -3,8 +3,8 @@ import { IDataSecurityAuth } from "@lib/security/IConfigSecurityAuth";
 
 export interface IDataRequest {
     session?: IDataSecurityAuth;
-    data?: Object;
-    condition?: Object;
+    data?: any;
+    condition?: any;
     options?: IQueryOptions;
 }
 

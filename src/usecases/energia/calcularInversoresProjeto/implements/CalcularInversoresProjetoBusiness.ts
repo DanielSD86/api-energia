@@ -8,6 +8,7 @@ import { StringUtils } from "@lib/utils/StringUtils";
 import { ModulosProjetoDom } from "@usecases/energia/produtos/implements/InversoresModulos";
 import { ProdutosBusiness } from "@usecases/energia/produtos/implements/ProdutosBusiness";
 import { ProdutosDom } from "@usecases/energia/produtos/implements/ProdutosDom";
+import { ProdutosMergeListProcess } from "@usecases/energia/produtos/implements/ProdutosMergeListProcess";
 import { ProjetosBusiness } from "@usecases/energia/projetos/implements/ProjetosBusiness";
 import { ProjetosDom } from "@usecases/energia/projetos/implements/ProjetosDom";
 import { ProjetosInversoresDom } from "@usecases/energia/projetosInversores/implements/ProjetosInversoresDom";
@@ -99,6 +100,14 @@ export class CalcularInversoresProjetoBusiness implements IBusinessProcess {
         const projeto : ProjetosDom = dataRequest.data[CalcularInversoresProjetoBusiness.FIELD_PROJETO];
         const modulos: ProdutosDom[] = dataRequest.data[CalcularInversoresProjetoBusiness.FIELD_MODULOS];
         const inversores: ProdutosDom[] = dataRequest.data[CalcularInversoresProjetoBusiness.FIELD_INVERSORES];
+
+        // Persiste os produtos
+        const produtos = modulos.concat(inversores);
+        const resultProdutos = await ProdutosBusiness.getInstance().executeProcess(ProdutosMergeListProcess.getInstance(), repositoryClient, {
+            data: produtos,
+            session: dataRequest.session
+        });
+        if (!resultProdutos.status) return resultProdutos;
 
         // Processos de processamento do projeto
         const inversoresModulos = ProdutosBusiness.getModulosPorInversor(inversores, modulos);

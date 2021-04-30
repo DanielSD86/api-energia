@@ -10,6 +10,7 @@ import { EntityUtils, TYPE_VALIDATE } from "@lib/utils/EntityUtils";
 import { StringUtils } from "@lib/utils/StringUtils";
 import { IDataRequest, IResultAdapter } from "../IAdapter";
 import { ILayerRepository } from "../repository/ILayerRepository";
+import { IBusinessProcess } from "./IBusinessProcess";
 import { ILayerBusiness } from "./ILayerBusiness";
 import { IAssociateBusiness, OPERATION_ASSOCIATE, OPERATION_BUSINESS, OPERATION_CUSTOM, ROWS_COUNT_QUERY, TYPE_ASSOCIATE } from "./LayerBusinessTypes";
 
@@ -675,5 +676,14 @@ export abstract class AbstractLayerBusiness implements ILayerBusiness {
     // ignoreFieldCompanyCustom(nameOperation?: string): boolean {
     ignoreFieldCompanyCustom(nameOperation?: string): boolean {
         return false;
+    }
+
+    async executeProcess(process: IBusinessProcess, repositoryClient: IRepositoryClient, dataRequest: IDataRequest) : Promise<IResultAdapter> {
+        await process.fill(repositoryClient, dataRequest);
+
+        const resultValidate = await process.validate(repositoryClient, dataRequest);
+        if (!resultValidate.status) return resultValidate;
+
+        return await process.execute(repositoryClient, dataRequest);
     }
 }

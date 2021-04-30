@@ -8,9 +8,6 @@ export function RouterProjetos() {
 
     router.get("/", controller.findAll);
     router.get("/:" + FIELD_ID_URL, controller.findById);
-    router.post("/", controller.create);
-    router.put("/:" + FIELD_ID_URL, controller.update);
-    router.delete("/:" + FIELD_ID_URL, controller.disable);
 
     return router;
 }
