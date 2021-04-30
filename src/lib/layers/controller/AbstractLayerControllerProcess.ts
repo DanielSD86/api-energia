@@ -20,6 +20,9 @@ export abstract class AbstractLayerControllerProcess {
         //console.log(response.dataInfo, dataRequest.options, dataRequest.options.limit);
 
         if (!response.dataInfo || !dataRequest.options || !dataRequest.options.limit) {
+            if (response.data.length === 1)
+                return rowsResult[0];
+
             return rowsResult;
         }
 

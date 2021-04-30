@@ -1,7 +1,7 @@
 import { Produtos } from "@entities/energia/Produtos";
 import { Projetos } from "@entities/energia/Projetos";
 import { ProjetosInversores } from "@entities/energia/ProjetosInversores";
-import { FIELD_COMPANY, FIELD_DATE_CREATE, FIELD_USER_CREATE, TYPE_FIELD } from "@lib/entity/EntityConsts";
+import { FIELD_COMPANY, FIELD_DATE_CREATE, FIELD_ID_URL, FIELD_USER_CREATE, TYPE_FIELD } from "@lib/entity/EntityConsts";
 import { IEntity } from "@lib/entity/IEntity";
 import * as fs from "fs";
 
@@ -225,6 +225,7 @@ async function createRouter(folder: String, name: String, readOnly: boolean = fa
     if (!fs.existsSync(fileComplete)) {
         let writeStream = fs.createWriteStream(fileComplete);
 
+        writeStream.write('import { FIELD_ID_URL } from "@lib/entity/EntityConsts";\n');
         writeStream.write('import { SecutiryAuthService } from "@services/SecurityAuthService";\n');
         writeStream.write('import express from "express";\n');
         writeStream.write('import { ' + nameUseCase + 'Controller } from "./' + nameUseCase + 'Controller";\n');
@@ -232,12 +233,12 @@ async function createRouter(folder: String, name: String, readOnly: boolean = fa
         writeStream.write('    const router = express.Router();\n');
         writeStream.write('    const controller = ' + nameUseCase + 'Controller.getInstance();\n');
         writeStream.write('    router.get("/", SecutiryAuthService().validateAuthController, controller.findAll);\n');
-        writeStream.write('    router.get("/:id", SecutiryAuthService().validateAuthController, controller.findById);\n'); 
+        writeStream.write('    router.get("/:\" + FIELD_ID_URL + \", SecutiryAuthService().validateAuthController, controller.findById);\n'); 
         
         if (!readOnly) {
             writeStream.write('    router.post("/", SecutiryAuthService().validateAuthController, controller.create);\n');
-            writeStream.write('    router.put("/:id", SecutiryAuthService().validateAuthController, controller.update);\n');
-            writeStream.write('    router.delete("/:id", SecutiryAuthService().validateAuthController, controller.disable);\n');
+            writeStream.write('    router.put("/:\" + FIELD_ID_URL + \", SecutiryAuthService().validateAuthController, controller.update);\n');
+            writeStream.write('    router.delete("/:\" + FIELD_ID_URL + \", SecutiryAuthService().validateAuthController, controller.disable);\n');
         }
 
         writeStream.write('    return router;\n');
@@ -459,7 +460,7 @@ async function execute() {
             await createFiles(ProjetosInversores.getInstance());
 
             // Processos sem vinculo com entidades
-            await createFilesProcess("energia", "inversor");
+            await createFilesProcess("energia", "calcularInversoresProjeto");
 
             console.log("Casos de uso finalizado com sucesso");
             console.timeEnd("USECASES");

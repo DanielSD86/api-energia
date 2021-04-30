@@ -26,3 +26,4 @@ export const FIELD_DATE_CREATE = "dh_create";
 export const FIELD_DATE_UPDATE = "dh_update";
 export const FIELD_DATE_DISABLE = "dh_disable";
 export const FIELD_INTEGRATION = "cd_integracao";
+export const FIELD_ID_URL = "id_url";

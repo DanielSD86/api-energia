@@ -56,6 +56,9 @@ export abstract class AbstractWhereBuilder implements IWhereBuilder {
         const fieldEntityOther = entityOther.entity.getField(fieldOther);
 
         if (fieldEntity === null) {
+            console.log(alias, entity, field, aliasOther, entityOther, fieldOther);
+            
+
             throw new Error("Campo " + field + " não encontrado para entidade " + entity.entity.name + ".");
         }
 

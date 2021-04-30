@@ -1,18 +1,19 @@
-import { Produtos } from "@entities/energia/Produtos";
+import { Produtos, TIPO_PRODUTO } from "@entities/energia/Produtos";
 import { IBusinessProcess } from "@lib/layers/business/IBusinessProcess";
 import { IDataRequest, IResultAdapter } from "@lib/layers/IAdapter";
 import { IRepositoryClient } from "@lib/repository/IRepositoryClient";
 import { DataUtils } from "@lib/utils/DataUtils";
-import { EntityUtils, TYPE_VALIDATE } from "@lib/utils/EntityUtils";
-import { InversoresProjetoDom, ModulosProjetoDom } from "@usecases/energia/produtos/implements/InversoresModulos";
+import { TYPE_VALIDATE } from "@lib/utils/EntityUtils";
+import { StringUtils } from "@lib/utils/StringUtils";
+import { ModulosProjetoDom } from "@usecases/energia/produtos/implements/InversoresModulos";
 import { ProdutosBusiness } from "@usecases/energia/produtos/implements/ProdutosBusiness";
 import { ProdutosDom } from "@usecases/energia/produtos/implements/ProdutosDom";
 import { ProjetosBusiness } from "@usecases/energia/projetos/implements/ProjetosBusiness";
 import { ProjetosDom } from "@usecases/energia/projetos/implements/ProjetosDom";
 import { ProjetosInversoresDom } from "@usecases/energia/projetosInversores/implements/ProjetosInversoresDom";
 
-export class ProjetoInversorBusiness implements IBusinessProcess {
-    static instance: ProjetoInversorBusiness;
+export class CalcularInversoresProjetoBusiness implements IBusinessProcess {
+    static instance: CalcularInversoresProjetoBusiness;
 
     static MSG_MODULOS_NOT_FOUND = "Nenhum modulo foi informado na lista de produtos";
     static MSG_INVERSORES_NOT_FOUND = "Nenhum inversor foi informado na lista de produtos";
@@ -23,28 +24,28 @@ export class ProjetoInversorBusiness implements IBusinessProcess {
     static FIELD_PRODUTOS = "produtos";
     static FIELD_PROJETO = "projeto";
 
-    static getInstance(): ProjetoInversorBusiness {
-        if (!ProjetoInversorBusiness.instance) {
-            ProjetoInversorBusiness.instance = new ProjetoInversorBusiness();
+    static getInstance(): CalcularInversoresProjetoBusiness {
+        if (!CalcularInversoresProjetoBusiness.instance) {
+            CalcularInversoresProjetoBusiness.instance = new CalcularInversoresProjetoBusiness();
         }
-        return ProjetoInversorBusiness.instance;
+        return CalcularInversoresProjetoBusiness.instance;
     }
 
     async fill(repositoryClient: IRepositoryClient, dataRequest: IDataRequest): Promise<void> {
-        if (dataRequest.data[ProjetoInversorBusiness.FIELD_PRODUTOS]) {
-            const produtos : ProdutosDom[] = dataRequest.data[ProjetoInversorBusiness.FIELD_PRODUTOS];
+        if (dataRequest.data[CalcularInversoresProjetoBusiness.FIELD_PRODUTOS]) {
+            const produtos : ProdutosDom[] = dataRequest.data[CalcularInversoresProjetoBusiness.FIELD_PRODUTOS];
 
             const modulos = ProdutosBusiness.getModulos(produtos);
             const inversores = ProdutosBusiness.getInversores(produtos);
 
-            dataRequest.data[ProjetoInversorBusiness.FIELD_MODULOS] = modulos;
-            dataRequest.data[ProjetoInversorBusiness.FIELD_INVERSORES] = inversores;
+            dataRequest.data[CalcularInversoresProjetoBusiness.FIELD_MODULOS] = modulos;
+            dataRequest.data[CalcularInversoresProjetoBusiness.FIELD_INVERSORES] = inversores;
         }
     }
 
     async validate(repositoryClient: IRepositoryClient, dataRequest: IDataRequest): Promise<IResultAdapter> {
         // Valida estrutura básica
-        const fields = [ProjetoInversorBusiness.FIELD_PRODUTOS, ProjetoInversorBusiness.FIELD_PROJETO];
+        const fields = [CalcularInversoresProjetoBusiness.FIELD_PRODUTOS, CalcularInversoresProjetoBusiness.FIELD_PROJETO];
         const resultRequired = DataUtils.getFieldsRequired(dataRequest.data, fields);
         if (!resultRequired.status) {
             return {
@@ -54,23 +55,23 @@ export class ProjetoInversorBusiness implements IBusinessProcess {
         }
 
         // Valida os modulos
-        if (!dataRequest.data[ProjetoInversorBusiness.FIELD_MODULOS] || dataRequest.data[ProjetoInversorBusiness.FIELD_MODULOS].length === 0) {
+        if (!dataRequest.data[CalcularInversoresProjetoBusiness.FIELD_MODULOS] || dataRequest.data[CalcularInversoresProjetoBusiness.FIELD_MODULOS].length === 0) {
             return {
                 status: false,
-                message: [ProjetoInversorBusiness.MSG_MODULOS_NOT_FOUND],
+                message: [CalcularInversoresProjetoBusiness.MSG_MODULOS_NOT_FOUND],
             }
         }
 
         // Valida os inversores
-        if (!dataRequest.data[ProjetoInversorBusiness.FIELD_INVERSORES] || dataRequest.data[ProjetoInversorBusiness.FIELD_INVERSORES].length === 0) {
+        if (!dataRequest.data[CalcularInversoresProjetoBusiness.FIELD_INVERSORES] || dataRequest.data[CalcularInversoresProjetoBusiness.FIELD_INVERSORES].length === 0) {
             return {
                 status: false,
-                message: [ProjetoInversorBusiness.MSG_MODULOS_NOT_FOUND],
+                message: [CalcularInversoresProjetoBusiness.MSG_MODULOS_NOT_FOUND],
             }
         }
 
         // Valida estrutura dos dados
-        const resultValidateProdutos = await ProdutosBusiness.getInstance().validateEntity(dataRequest.data[ProjetoInversorBusiness.FIELD_PRODUTOS], TYPE_VALIDATE.SCOPE, "Produtos");
+        const resultValidateProdutos = await ProdutosBusiness.getInstance().validateEntity(dataRequest.data[CalcularInversoresProjetoBusiness.FIELD_PRODUTOS], TYPE_VALIDATE.CREATE, "Produtos");
         if (!resultValidateProdutos.status) {
             return {
                 status: false,
@@ -78,7 +79,7 @@ export class ProjetoInversorBusiness implements IBusinessProcess {
             }
         }
 
-        const resultValidateProjeto = await ProjetosBusiness.getInstance().validateEntity(dataRequest.data[ProjetoInversorBusiness.FIELD_PROJETO], TYPE_VALIDATE.CREATE, "Projeto");
+        const resultValidateProjeto = await ProjetosBusiness.getInstance().validateEntity(dataRequest.data[CalcularInversoresProjetoBusiness.FIELD_PROJETO], TYPE_VALIDATE.CREATE, "Projeto");
         if (!resultValidateProjeto.status) {
             return {
                 status: false,
@@ -86,7 +87,7 @@ export class ProjetoInversorBusiness implements IBusinessProcess {
             }
         }
 
-        delete dataRequest.data[ProjetoInversorBusiness.FIELD_PRODUTOS];
+        delete dataRequest.data[CalcularInversoresProjetoBusiness.FIELD_PRODUTOS];
 
         return {
             status: true,
@@ -95,9 +96,9 @@ export class ProjetoInversorBusiness implements IBusinessProcess {
     
     async execute(repositoryClient: IRepositoryClient, dataRequest: IDataRequest): Promise<IResultAdapter> {
         // Dados para calculo
-        const projeto : ProjetosDom = dataRequest.data[ProjetoInversorBusiness.FIELD_PROJETO];
-        const modulos: ProdutosDom[] = dataRequest.data[ProjetoInversorBusiness.FIELD_MODULOS];
-        const inversores: ProdutosDom[] = dataRequest.data[ProjetoInversorBusiness.FIELD_INVERSORES];
+        const projeto : ProjetosDom = dataRequest.data[CalcularInversoresProjetoBusiness.FIELD_PROJETO];
+        const modulos: ProdutosDom[] = dataRequest.data[CalcularInversoresProjetoBusiness.FIELD_MODULOS];
+        const inversores: ProdutosDom[] = dataRequest.data[CalcularInversoresProjetoBusiness.FIELD_INVERSORES];
 
         // Processos de processamento do projeto
         const inversoresModulos = ProdutosBusiness.getModulosPorInversor(inversores, modulos);
@@ -126,9 +127,40 @@ export class ProjetoInversorBusiness implements IBusinessProcess {
                 continue;
             }
 
+            // Busca ID do inversor
+            const resultInversor = await ProdutosBusiness.getInstance().findByBusiness(repositoryClient, {
+                data: {
+                    [Produtos.TIPO]: String(TIPO_PRODUTO.INVERSOR),
+                    [Produtos.ID]: inversor.inversor.id,
+                }
+            });
+
+            if (!resultInversor.status) {
+                return {
+                    status: false,
+                    message: [StringUtils.getFormatMsg("Inversor {0} não localizado.", inversor.inversor.id)]
+                };
+            }
+
+            // Busca ID do modulo
+            const resultModulo = await ProdutosBusiness.getInstance().findByBusiness(repositoryClient, {
+                data: {
+                    [Produtos.TIPO]: String(TIPO_PRODUTO.MODULO),
+                    [Produtos.ID]: inversor.modulo.id,
+                }
+            });
+
+            if (!resultModulo.status) {
+                return {
+                    status: false,
+                    message: [StringUtils.getFormatMsg("Modulo {0} não localizado.", inversor.modulo.id)]
+                };
+            }
+
+            // Registra para criação
             projetoInversores.push({
-                id_produto_inversor: inversor.inversor.id,
-                id_produto_modulo: inversor.modulo.id,
+                id_produto_inversor: DataUtils.get(resultInversor.data)[Produtos.ID_PRODUTO],
+                id_produto_modulo: DataUtils.get(resultModulo.data)[Produtos.ID_PRODUTO], 
                 quantidade_inversor: 1,
                 quantidade_modulo_por_inversor: inversor.quantidade,
                 id_projeto: null,                

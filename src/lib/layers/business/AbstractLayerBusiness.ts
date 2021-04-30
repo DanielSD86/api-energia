@@ -1,4 +1,4 @@
-import { ENTITY_COMPANY, FIELD_COMPANY, FIELD_DATE_CREATE, FIELD_DATE_DISABLE, FIELD_DATE_UPDATE, FIELD_USER_CREATE, FIELD_USER_DISABLE, FIELD_USER_UPDATE } from "@lib/entity/EntityConsts";
+import { ENTITY_COMPANY, FIELD_COMPANY, FIELD_DATE_CREATE, FIELD_DATE_DISABLE, FIELD_DATE_UPDATE, FIELD_ID_URL, FIELD_USER_CREATE, FIELD_USER_DISABLE, FIELD_USER_UPDATE } from "@lib/entity/EntityConsts";
 import { IEntity } from "@lib/entity/IEntity";
 import { REPOSITORY_NOT_DEFINED } from "@lib/repository/IRepository";
 import { IRepositoryClient } from "@lib/repository/IRepositoryClient";
@@ -580,18 +580,18 @@ export abstract class AbstractLayerBusiness implements ILayerBusiness {
 
         // Vinculo ID com ID da entidade
         const fieldId = entity.getId();
-        if (fieldId != null && fieldId.name != "id") {
+        if (fieldId != null && fieldId.name != FIELD_ID_URL) {
             if (dataRequest.data) {
-                if (dataRequest.data["id"] != undefined) {
-                    dataRequest.data[fieldId.name] = dataRequest.data["id"];
-                    delete dataRequest.data["id"];
+                if (dataRequest.data[FIELD_ID_URL] != undefined) {
+                    dataRequest.data[fieldId.name] = dataRequest.data[FIELD_ID_URL];
+                    delete dataRequest.data[FIELD_ID_URL];
                 }
             }
 
             if (dataRequest.condition) {
-                if (dataRequest.condition["id"] != undefined) {
-                    dataRequest.condition[fieldId.name] = dataRequest.condition["id"];
-                    delete dataRequest.condition["id"];
+                if (dataRequest.condition[FIELD_ID_URL] != undefined) {
+                    dataRequest.condition[fieldId.name] = dataRequest.condition[FIELD_ID_URL];
+                    delete dataRequest.condition[FIELD_ID_URL];
                 }
             }
         }       

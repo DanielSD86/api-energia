@@ -1,5 +1,5 @@
 import { RouterProdutos } from "@usecases/energia/produtos/implements/ProdutosRouter";
-import { RouterProjetoInversor } from "@usecases/energia/projetoInversor/implements/ProjetoInversorRouter";
+import { RouterProjetoInversor } from "@usecases/energia/calcularInversoresProjeto/implements/CalcularInversoresProjetoRouter";
 import { RouterProjetos } from "@usecases/energia/projetos/implements/ProjetosRouter";
 import { Router } from "express";
 

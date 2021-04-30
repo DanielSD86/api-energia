@@ -1,3 +1,4 @@
+import { FIELD_ID_URL } from "@lib/entity/EntityConsts";
 import express from "express";
 import { ProjetosController } from "./ProjetosController";
 
@@ -6,10 +7,10 @@ export function RouterProjetos() {
     const controller = ProjetosController.getInstance();
 
     router.get("/", controller.findAll);
-    router.get("/:id", controller.findById);
+    router.get("/:" + FIELD_ID_URL, controller.findById);
     router.post("/", controller.create);
-    router.put("/:id", controller.update);
-    router.delete("/:id", controller.disable);
+    router.put("/:" + FIELD_ID_URL, controller.update);
+    router.delete("/:" + FIELD_ID_URL, controller.disable);
 
     return router;
 }
