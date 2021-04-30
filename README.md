@@ -149,5 +149,8 @@ O Banco utilizado é PostgreSql.
 Para executação inicial do migration, deve ser criado um arquivo de .env, como informado no exemplo ".env.exemplo".
 As propriedades deverão ser alteradas conforme configuração do ambiente.
 
---
-Daniel Diniz
+## Testes
+
+Para efetuar os testes, utilize o comando yarn test.
+
+#### Daniel Diniz

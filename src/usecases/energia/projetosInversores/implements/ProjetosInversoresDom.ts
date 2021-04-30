@@ -1,5 +1,5 @@
 export interface ProjetosInversoresDom {
-    readonly id?: number, 
+    readonly id_projeto_inversor?: number, 
     id_projeto: number, 
     id_produto_inversor: number, 
     id_produto_modulo: number, 

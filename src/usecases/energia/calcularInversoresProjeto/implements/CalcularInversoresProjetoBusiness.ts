@@ -11,7 +11,7 @@ import { ProdutosDom } from "@usecases/energia/produtos/implements/ProdutosDom";
 import { ProdutosMergeListProcess } from "@usecases/energia/produtos/implements/ProdutosMergeListProcess";
 import { ProjetosBusiness } from "@usecases/energia/projetos/implements/ProjetosBusiness";
 import { ProjetosDom } from "@usecases/energia/projetos/implements/ProjetosDom";
-import { ProjetosInversoresDom } from "@usecases/energia/projetosInversores/implements/ProjetosInversoresDom";
+import { ProjetosInversoresModulo } from "./ProjetosInversoresModulo";
 
 export class CalcularInversoresProjetoBusiness implements IBusinessProcess {
     static instance: CalcularInversoresProjetoBusiness;
@@ -101,14 +101,6 @@ export class CalcularInversoresProjetoBusiness implements IBusinessProcess {
         const modulos: ProdutosDom[] = dataRequest.data[CalcularInversoresProjetoBusiness.FIELD_MODULOS];
         const inversores: ProdutosDom[] = dataRequest.data[CalcularInversoresProjetoBusiness.FIELD_INVERSORES];
 
-        // Persiste os produtos
-        const produtos = modulos.concat(inversores);
-        const resultProdutos = await ProdutosBusiness.getInstance().executeProcess(ProdutosMergeListProcess.getInstance(), repositoryClient, {
-            data: produtos,
-            session: dataRequest.session
-        });
-        if (!resultProdutos.status) return resultProdutos;
-
         // Processos de processamento do projeto
         const inversoresModulos = ProdutosBusiness.getModulosPorInversor(inversores, modulos);
         const modulosProjeto: ModulosProjetoDom[] = ProdutosBusiness.getModulosPorProjeto(modulos, projeto.potencia);        
@@ -126,53 +118,49 @@ export class CalcularInversoresProjetoBusiness implements IBusinessProcess {
 
         // Persiste o projeto, com a solução
         const projetoCreate: ProjetosDom = projeto;
-        const projetoInversores: ProjetosInversoresDom[] = [];
+        const projetoInversores: ProjetosInversoresModulo[] = [];
 
         for (const inversor of inversorPorProjeto) {
-            const inversorExist = projetoInversores.find((inv) => inv.id_produto_inversor === inversor.inversor.id);
+            const inversorExist = projetoInversores.find((inv) => {
+                return inv.inverdorId === inversor.inversor.id;
+            });
 
             if (inversorExist) {
                 inversorExist.quantidade_inversor++
                 continue;
             }
 
-            // Busca ID do inversor
-            const resultInversor = await ProdutosBusiness.getInstance().findByBusiness(repositoryClient, {
-                data: {
-                    [Produtos.TIPO]: String(TIPO_PRODUTO.INVERSOR),
-                    [Produtos.ID]: inversor.inversor.id,
-                }
+            // Persiste os produtos selecionados
+            const produtos = [ inversor.inversor, inversor.modulo ];
+            const resultProdutos = await ProdutosBusiness.getInstance().executeProcess(ProdutosMergeListProcess.getInstance(), repositoryClient, {
+                data: produtos,
+                session: dataRequest.session
             });
+            if (!resultProdutos.status) return resultProdutos;
 
-            if (!resultInversor.status) {
-                return {
-                    status: false,
-                    message: [StringUtils.getFormatMsg("Inversor {0} não localizado.", inversor.inversor.id)]
-                };
-            }
+            let inversorId = null, moduloId = null;
 
-            // Busca ID do modulo
-            const resultModulo = await ProdutosBusiness.getInstance().findByBusiness(repositoryClient, {
-                data: {
-                    [Produtos.TIPO]: String(TIPO_PRODUTO.MODULO),
-                    [Produtos.ID]: inversor.modulo.id,
+            for (const produto of resultProdutos.data) {
+                if (produto[Produtos.TIPO] === String(TIPO_PRODUTO.INVERSOR)) {
+                    inversorId = produto[Produtos.ID_PRODUTO];
+                    continue;
                 }
-            });
 
-            if (!resultModulo.status) {
-                return {
-                    status: false,
-                    message: [StringUtils.getFormatMsg("Modulo {0} não localizado.", inversor.modulo.id)]
-                };
+                if (produto[Produtos.TIPO] === String(TIPO_PRODUTO.MODULO)) {
+                    moduloId = produto[Produtos.ID_PRODUTO];
+                    continue;
+                }
             }
 
             // Registra para criação
             projetoInversores.push({
-                id_produto_inversor: DataUtils.get(resultInversor.data)[Produtos.ID_PRODUTO],
-                id_produto_modulo: DataUtils.get(resultModulo.data)[Produtos.ID_PRODUTO], 
+                id_produto_inversor: inversorId,
+                id_produto_modulo: moduloId, 
                 quantidade_inversor: 1,
                 quantidade_modulo_por_inversor: inversor.quantidade,
-                id_projeto: null,                
+                id_projeto: null,   
+                inverdorId: inversor.inversor.id,
+                moduloId: inversor.modulo.id,
             });
         }
 
