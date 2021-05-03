@@ -3,7 +3,7 @@ import { ProdutosRepository } from "./ProdutosRepository";
 import { IProdutosBusiness } from "../IProdutosBusiness";
 import { ProdutosDom } from "./ProdutosDom";
 import { TIPO_PRODUTO } from "@entities/energia/Produtos";
-import { InversoresModulosDom, InversoresProjetoDom, ModulosProjetoDom } from "./InversoresModulos";
+import { InversoresModulosDom, InversoresProjetoDom, InversorSolucaoDom, ModulosProjetoDom } from "./InversoresModulos";
 
 export class ProdutosBusiness extends AbstractLayerBusiness implements IProdutosBusiness {
     static instance: ProdutosBusiness;
@@ -98,12 +98,7 @@ export class ProdutosBusiness extends AbstractLayerBusiness implements IProdutos
     static getInversorPorProjeto(inversoresModulos: InversoresModulosDom[], modulosProjeto: ModulosProjetoDom[]): InversoresProjetoDom[] {
         const list: InversoresProjetoDom[] = [];
         let quantidadeInversor = 1;
-        const inversorSolucao : {
-            inversor?: ProdutosDom,
-            modulo?: ProdutosDom,
-            quantidadeModulo?: number,
-            potenciaModulo?: number,
-        } = {};
+        const inversorSolucao : InversorSolucaoDom = {};
 
         do {
             // Valida cada modulo disponível se fecha com a quantidade existente de cada modulo no inversor
@@ -124,10 +119,10 @@ export class ProdutosBusiness extends AbstractLayerBusiness implements IProdutos
                             }
 
                             // Regra para considerar o numero de modulos mais perto da potencia do modulo
-                            const potenciaModulo = modulo.modulo.potencia * inversor.quantidade;
+                            /*const potenciaModulo = modulo.modulo.potencia * inversor.quantidade;
                             if (potenciaModulo < inversorSolucao.potenciaModulo) {
                                 continue;
-                            }
+                            }*/
                         }
 
                         // Guarda o inversor e modulo que foi atendido no projeto

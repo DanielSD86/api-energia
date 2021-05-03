@@ -17,3 +17,10 @@ export interface ModulosProjetoDom {
     modulo: ProdutosDom, 
     quantidade: number
 }
+
+export interface InversorSolucaoDom {
+    inversor?: ProdutosDom,
+    modulo?: ProdutosDom,
+    quantidadeModulo?: number,
+    potenciaModulo?: number,
+}
