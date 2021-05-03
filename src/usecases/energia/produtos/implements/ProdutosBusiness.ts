@@ -119,10 +119,10 @@ export class ProdutosBusiness extends AbstractLayerBusiness implements IProdutos
                             }
 
                             // Regra para considerar o numero de modulos mais perto da potencia do modulo
-                            /*const potenciaModulo = modulo.modulo.potencia * inversor.quantidade;
+                            const potenciaModulo = modulo.modulo.potencia * inversor.quantidade;
                             if (potenciaModulo < inversorSolucao.potenciaModulo) {
                                 continue;
-                            }*/
+                            }
                         }
 
                         // Guarda o inversor e modulo que foi atendido no projeto
