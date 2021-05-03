@@ -104,6 +104,14 @@ export class CalcularInversoresProjetoBusiness implements IBusinessProcess {
         // Processos de processamento do projeto
         const inversoresModulos = ProdutosBusiness.getModulosPorInversor(inversores, modulos);
         const modulosProjeto: ModulosProjetoDom[] = ProdutosBusiness.getModulosPorProjeto(modulos, projeto.potencia);        
+        
+        if (modulosProjeto.length === 0) {
+            return {
+                status: false,
+                message: ["Potência do projeto não é suportada por nenhum modulo"]
+            }
+        }
+
         const inversorPorProjeto = ProdutosBusiness.getInversorPorProjeto(inversoresModulos, modulosProjeto);
 
         // Monta resulta
