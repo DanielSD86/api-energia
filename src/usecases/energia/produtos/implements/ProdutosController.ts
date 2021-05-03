@@ -9,6 +9,7 @@ export class ProdutosController extends AbstractLayerController implements IProd
 
     constructor() {
         super(ProdutosService.getInstance());
+        this.isForceMaxRecorsRequest = false;
     }
 
     static getInstance(): ProdutosController {

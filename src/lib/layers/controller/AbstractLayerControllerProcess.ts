@@ -17,8 +17,6 @@ export abstract class AbstractLayerControllerProcess {
         const rowsResult = response.data;
         const infoRows = response.dataInfo;
 
-        //console.log(response.dataInfo, dataRequest.options, dataRequest.options.limit);
-
         if (!response.dataInfo || !dataRequest.options || !dataRequest.options.limit) {
             if (response.data.length === 1)
                 return rowsResult[0];

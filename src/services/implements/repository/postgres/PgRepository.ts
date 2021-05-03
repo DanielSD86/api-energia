@@ -27,8 +27,6 @@ export class PgRepository implements IRepository {
 
         if (this.config.levelLog != LEVEL_LOG_DB.NONE) console.time("CONEXAO");
 
-        console.log(config.connectionString);
-
         this.db = new Pool({
             connectionString: config.connectionString,
             application_name: config.applicationName,
