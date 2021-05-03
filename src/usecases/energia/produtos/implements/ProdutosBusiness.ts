@@ -111,7 +111,7 @@ export class ProdutosBusiness extends AbstractLayerBusiness implements IProdutos
                 for (const inversor of inversoresModuloEspecifico) {                    
                     // Especificação Técnica: Quantidade de modulos para atender o projeto
                     // Quantidade = deve ser menor ou igual a quantidade de modulos que o inversor suporta
-                    if (modulo.quantidade < (inversor.quantidade * quantidadeInversor)) {
+                    if (modulo.quantidade <= (inversor.quantidade * quantidadeInversor)) {
                         if (inversorSolucao.inversor) {
                             // Especificação Técnica: Considerar sempre o inversor com menos potencia
                             if (inversorSolucao.inversor.potencia < inversor.inversor.potencia) {
@@ -120,10 +120,11 @@ export class ProdutosBusiness extends AbstractLayerBusiness implements IProdutos
 
                             // Regra para considerar o numero de modulos mais perto da potencia do modulo
                             const potenciaModulo = modulo.modulo.potencia * inversor.quantidade;
-                            if (potenciaModulo < inversorSolucao.potenciaModulo) {
+
+                            if (potenciaModulo > inversorSolucao.potenciaModulo) {
                                 continue;
                             }
-                        }
+                        }                        
 
                         // Guarda o inversor e modulo que foi atendido no projeto
                         inversorSolucao.inversor = inversor.inversor;
